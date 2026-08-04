@@ -14,11 +14,13 @@ type templateData struct {
 	Snippet     models.Snippet
 	Snippets    []models.Snippet
 	Form        any
+	Flash       string
 }
 
 func (a *application) newTemplateData(r *http.Request) templateData {
 	return templateData{
 		CurrentYear: time.Now().Year(),
+		Flash:       a.sessionManager.PopString(r.Context(), "flash"),
 	}
 }
 
