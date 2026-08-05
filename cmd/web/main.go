@@ -19,6 +19,7 @@ import (
 
 type application struct {
 	logger         *slog.Logger
+	users          *models.UserModel
 	snippets       *models.SnippetModel
 	templateCache  map[string]*template.Template
 	formDecoder    *form.Decoder
@@ -53,7 +54,14 @@ func main() {
 	sessionManager.Lifetime = 12 * time.Hour
 	sessionManager.Cookie.Secure = true
 
-	app := &application{logger, &models.SnippetModel{DB: db}, templateCache, formDecoder, sessionManager}
+	app := &application{
+		logger,
+		&models.UserModel{DB: db},
+		&models.SnippetModel{DB: db},
+		templateCache,
+		formDecoder,
+		sessionManager,
+	}
 
 	tslConfig := &tls.Config{
 		CurvePreferences: []tls.CurveID{tls.X25519, tls.CurveP256},
