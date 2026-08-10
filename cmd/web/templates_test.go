@@ -3,6 +3,8 @@ package main
 import (
 	"testing"
 	"time"
+
+	"github.com/Jackob2004/snippetbox/internal/assert"
 )
 
 func TestHumanDate(t *testing.T) {
@@ -31,9 +33,7 @@ func TestHumanDate(t *testing.T) {
 	for _, test := range cases {
 		t.Run(test.name, func(t *testing.T) {
 			got := humanDate(test.tm)
-			if got != test.want {
-				t.Errorf("got %q, want %q", got, test.want)
-			}
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
