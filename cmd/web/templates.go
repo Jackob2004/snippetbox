@@ -26,7 +26,7 @@ type templateData struct {
 func (a *application) newTemplateData(r *http.Request) templateData {
 	return templateData{
 		CurrentYear:     time.Now().Year(),
-		Flash:           a.sessionManager.PopString(r.Context(), "flash"),
+		Flash:           a.sessionManager.PopString(r.Context(), Flash),
 		IsAuthenticated: a.isAuthenticated(r),
 		CSRFToken:       nosurf.Token(r),
 	}

@@ -97,7 +97,7 @@ func (a *application) snippetCreatePost(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	a.sessionManager.Put(r.Context(), "flash", "Snippet successfully created!")
+	a.sessionManager.Put(r.Context(), Flash, "Snippet successfully created!")
 
 	http.Redirect(w, r, fmt.Sprintf("/snippet/view/%d", id), http.StatusSeeOther)
 }
@@ -168,7 +168,7 @@ func (a *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	a.sessionManager.Put(r.Context(), "flash", "Your signup was successful. Please log in.")
+	a.sessionManager.Put(r.Context(), Flash, "Your signup was successful. Please log in.")
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
 
@@ -227,7 +227,7 @@ func (a *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 
 	a.sessionManager.Put(r.Context(), AuthUserId, id)
 
-	path := a.sessionManager.PopString(r.Context(), SavedRedirect)
+	path := a.sessionManager.PopString(r.Context(), RedirectPathAfterLogin)
 	if path == "" {
 		path = "/snippet/create"
 	}
@@ -242,6 +242,6 @@ func (a *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	a.sessionManager.Remove(r.Context(), AuthUserId)
-	a.sessionManager.Put(r.Context(), "flash", "You've been logged out successfully!")
+	a.sessionManager.Put(r.Context(), Flash, "You've been logged out successfully!")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

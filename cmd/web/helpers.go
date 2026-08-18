@@ -10,11 +10,11 @@ import (
 	"github.com/go-playground/form/v4"
 )
 
+// session manager key
 const (
-	// AuthUserId - (session manager key)
-	AuthUserId = "authenticatedUserID"
-	// SavedRedirect - (session manager key) to the value of a protected path user initially wanted to access
-	SavedRedirect = "savedRedirect"
+	AuthUserId             = "authenticatedUserID"
+	RedirectPathAfterLogin = "redirectPathAfterLogin"
+	Flash                  = "flash"
 )
 
 func (a *application) serverError(w http.ResponseWriter, r *http.Request, err error) {
