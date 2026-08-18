@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/Jackob2004/snippetbox/internal/assert"
+	"github.com/Jackob2004/snippetbox/internal/models/mocks"
 )
 
 func TestPing(t *testing.T) {
@@ -161,7 +162,7 @@ func TestUserSignup(t *testing.T) {
 		{
 			name:              "Duplicate email",
 			userName:          validName,
-			userEmail:         "dupe@example.com",
+			userEmail:         mocks.Email,
 			userPassword:      validPassword,
 			useValidCSRFToken: true,
 			wantStatus:        http.StatusUnprocessableEntity,
@@ -209,8 +210,8 @@ func TestSnippetCreate(t *testing.T) {
 		res := ts.get(t, "/user/login")
 
 		form := url.Values{}
-		form.Add("email", "alice@example.com")
-		form.Add("password", "pa$$word")
+		form.Add("email", mocks.Email)
+		form.Add("password", mocks.Password)
 		form.Add("csrf_token", extractCSRFToken(t, res.body))
 		res = ts.postForm(t, "/user/login", form)
 

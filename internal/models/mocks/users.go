@@ -1,12 +1,17 @@
 package mocks
 
-import "github.com/Jackob2004/snippetbox/internal/models"
+import (
+	"github.com/Jackob2004/snippetbox/internal/models"
+)
 
 type UserModel struct{}
 
+const Email = "alice@example.com"
+const Password = "pa$$word"
+
 func (m *UserModel) Insert(name, email, password string) error {
 	switch email {
-	case "dupe@example.com":
+	case Email:
 		return models.ErrDuplicateEmail
 	default:
 		return nil
@@ -14,7 +19,7 @@ func (m *UserModel) Insert(name, email, password string) error {
 }
 
 func (m *UserModel) Authenticate(email, password string) (int, error) {
-	if email == "alice@example.com" && password == "pa$$word" {
+	if email == Email && password == Password {
 		return 1, nil
 	}
 
