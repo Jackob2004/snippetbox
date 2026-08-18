@@ -103,7 +103,7 @@ func (a *application) snippetCreatePost(w http.ResponseWriter, r *http.Request) 
 }
 
 func (a *application) account(w http.ResponseWriter, r *http.Request) {
-	id := a.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+	id := a.sessionManager.GetInt(r.Context(), AuthUserId)
 	user, err := a.users.Get(id)
 
 	if err != nil {
@@ -225,7 +225,7 @@ func (a *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	a.sessionManager.Put(r.Context(), "authenticatedUserID", id)
+	a.sessionManager.Put(r.Context(), AuthUserId, id)
 	http.Redirect(w, r, "/snippet/create", http.StatusSeeOther)
 }
 
@@ -236,7 +236,7 @@ func (a *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	a.sessionManager.Remove(r.Context(), "authenticatedUserID")
+	a.sessionManager.Remove(r.Context(), AuthUserId)
 	a.sessionManager.Put(r.Context(), "flash", "You've been logged out successfully!")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

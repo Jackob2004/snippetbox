@@ -78,7 +78,7 @@ func preventCSRF(next http.Handler) http.Handler {
 
 func (a *application) authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		id := a.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+		id := a.sessionManager.GetInt(r.Context(), AuthUserId)
 		if id == 0 {
 			next.ServeHTTP(w, r)
 			return

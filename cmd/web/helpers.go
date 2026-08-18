@@ -10,6 +10,8 @@ import (
 	"github.com/go-playground/form/v4"
 )
 
+const AuthUserId = "authenticatedUserID"
+
 func (a *application) serverError(w http.ResponseWriter, r *http.Request, err error) {
 	var (
 		method = r.Method
