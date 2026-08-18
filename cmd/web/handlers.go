@@ -27,6 +27,11 @@ func (a *application) home(w http.ResponseWriter, r *http.Request) {
 	a.render(w, r, http.StatusOK, "home.gohtml", data)
 }
 
+func (a *application) about(w http.ResponseWriter, r *http.Request) {
+	data := a.newTemplateData(r)
+	a.render(w, r, http.StatusOK, "about.gohtml", data)
+}
+
 func (a *application) snippetView(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil || id < 1 {
