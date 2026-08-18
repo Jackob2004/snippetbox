@@ -1,6 +1,8 @@
 package mocks
 
 import (
+	"time"
+
 	"github.com/Jackob2004/snippetbox/internal/models"
 )
 
@@ -33,4 +35,17 @@ func (m *UserModel) Exists(id int) (bool, error) {
 	default:
 		return false, nil
 	}
+}
+
+func (m *UserModel) Get(id int) (models.User, error) {
+	if id == 1 {
+		return models.User{
+			ID:        id,
+			Name:      "Alice",
+			Email:     Email,
+			CreatedAt: time.Now(),
+		}, nil
+	}
+
+	return models.User{}, models.ErrNoRecord
 }

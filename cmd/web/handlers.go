@@ -102,6 +102,24 @@ func (a *application) snippetCreatePost(w http.ResponseWriter, r *http.Request) 
 	http.Redirect(w, r, fmt.Sprintf("/snippet/view/%d", id), http.StatusSeeOther)
 }
 
+func (a *application) account(w http.ResponseWriter, r *http.Request) {
+	id := a.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+	user, err := a.users.Get(id)
+
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+		} else {
+			a.serverError(w, r, err)
+		}
+		return
+	}
+
+	data := a.newTemplateData(r)
+	data.User = user
+	a.render(w, r, http.StatusOK, "account.gohtml", data)
+}
+
 type userSignupForm struct {
 	Name                string `form:"name"`
 	Email               string `form:"email"`
