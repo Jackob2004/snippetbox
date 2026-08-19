@@ -6,16 +6,20 @@
         {{with .User}}
             <table>
                 <tr>
-                    <td><strong>Name</strong></td>
+                    <th>Name</th>
                     <td>{{.Name}}</td>
                 </tr>
                 <tr>
-                    <td><strong>Email</strong></td>
+                    <th>Email</th>
                     <td>{{.Email}}</td>
                 </tr>
                 <tr>
-                    <td><strong>Joined</strong></td>
+                    <th>Joined</th>
                     <td>{{humanDate .CreatedAt}}</td>
+                </tr>
+                <tr>
+                    <th>Password</th>
+                    <td><a href="/account/password/update">Change Password</a></td>
                 </tr>
             </table>
         {{end}}
