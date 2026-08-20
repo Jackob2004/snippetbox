@@ -7,9 +7,10 @@ import (
 )
 
 type SnippetModelInterface interface {
-	Insert(title string, content string, expires int) (int, error)
+	Insert(title string, content string, expires, userId int) (int, error)
 	Get(id int) (Snippet, error)
 	Latest() ([]Snippet, error)
+	GetSnippets(userId int) ([]Snippet, error)
 }
 
 type Snippet struct {
@@ -24,11 +25,11 @@ type SnippetModel struct {
 	DB *sql.DB
 }
 
-func (m *SnippetModel) Insert(title, content string, expires int) (int, error) {
-	stmt := `INSERT INTO snippets (title, content,created ,expires)
-	VALUES (?, ?, UTC_TIMESTAMP(), DATE_ADD(UTC_TIMESTAMP(), INTERVAL ? DAY))`
+func (m *SnippetModel) Insert(title, content string, expires, userId int) (int, error) {
+	stmt := `INSERT INTO snippets (title, content, created, expires, user_id)
+	VALUES (?, ?, UTC_TIMESTAMP(), DATE_ADD(UTC_TIMESTAMP(), INTERVAL ? DAY), ?)`
 
-	result, err := m.DB.Exec(stmt, title, content, expires)
+	result, err := m.DB.Exec(stmt, title, content, expires, userId)
 	if err != nil {
 		return 0, err
 	}
@@ -70,16 +71,30 @@ func (m *SnippetModel) Latest() ([]Snippet, error) {
 	}
 	defer rows.Close()
 
-	var snippets []Snippet
+	return mapRows(rows)
+}
 
+func (m *SnippetModel) GetSnippets(userId int) ([]Snippet, error) {
+	stmt := `SELECT id, title, content, created, expires FROM snippets
+    WHERE user_id = ?`
+
+	rows, err := m.DB.Query(stmt, userId)
+	if err != nil {
+		return []Snippet{}, err
+	}
+	defer rows.Close()
+
+	return mapRows(rows)
+}
+
+func mapRows(rows *sql.Rows) ([]Snippet, error) {
+	var snippets []Snippet
 	for rows.Next() {
 		var s Snippet
-
 		err := rows.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
 		if err != nil {
 			return nil, err
 		}
-
 		snippets = append(snippets, s)
 	}
 

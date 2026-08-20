@@ -31,6 +31,7 @@ func (a *application) routes() http.Handler {
 	mux.Handle("GET /snippet/create", protected.ThenFunc(a.snippetCreate))
 	mux.Handle("POST /snippet/create", protected.ThenFunc(a.snippetCreatePost))
 	mux.Handle("GET /account/view", protected.ThenFunc(a.accountView))
+	mux.Handle("GET /account/snippets", protected.ThenFunc(a.accountSnippets))
 	mux.Handle("GET /account/password/update", protected.ThenFunc(a.accountPasswordUpdate))
 	mux.Handle("POST /account/password/update", protected.ThenFunc(a.accountPasswordUpdatePost))
 

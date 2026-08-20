@@ -91,7 +91,8 @@ func (a *application) snippetCreatePost(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	id, err := a.snippets.Insert(form.Title, form.Content, form.Expires)
+	userId := a.sessionManager.GetInt(r.Context(), AuthUserId)
+	id, err := a.snippets.Insert(form.Title, form.Content, form.Expires, userId)
 	if err != nil {
 		a.serverError(w, r, err)
 		return
@@ -118,6 +119,19 @@ func (a *application) accountView(w http.ResponseWriter, r *http.Request) {
 	data := a.newTemplateData(r)
 	data.User = user
 	a.render(w, r, http.StatusOK, "account.gohtml", data)
+}
+
+func (a *application) accountSnippets(w http.ResponseWriter, r *http.Request) {
+	userId := a.sessionManager.GetInt(r.Context(), AuthUserId)
+	snippets, err := a.snippets.GetSnippets(userId)
+	if err != nil {
+		a.serverError(w, r, err)
+		return
+	}
+
+	data := a.newTemplateData(r)
+	data.Snippets = snippets
+	a.render(w, r, http.StatusOK, "user_snippets.gohtml", data)
 }
 
 type passwordChangeForm struct {
