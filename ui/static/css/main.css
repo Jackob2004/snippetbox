@@ -234,26 +234,13 @@ button:hover {
     color: #6A6C6F;
     padding: 0.75em 18px;
     overflow: auto;
-}
-
-.snippet .metadata span {
-    float: right;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem 2rem;
 }
 
 .snippet .metadata strong {
     color: #34495E;
-}
-
-.snippet .metadata time {
-    display: inline-block;
-}
-
-.snippet .metadata time:first-child {
-    float: left;
-}
-
-.snippet .metadata time:last-child {
-    float: right;
 }
 
 div.flash {

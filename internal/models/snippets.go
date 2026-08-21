@@ -19,6 +19,12 @@ type Snippet struct {
 	Content string
 	Created time.Time
 	Expires time.Time
+	Creator SnippetCreator
+}
+
+type SnippetCreator struct {
+	UserID   int
+	UserName string
 }
 
 type SnippetModel struct {
@@ -43,13 +49,14 @@ func (m *SnippetModel) Insert(title, content string, expires, userId int) (int, 
 }
 
 func (m *SnippetModel) Get(id int) (Snippet, error) {
-	stmt := `SELECT id, title, content, created, expires FROM snippets
-    WHERE expires > UTC_TIMESTAMP() AND id = ?`
+	stmt := `SELECT snippets.id, title, content, snippets.created, expires, user_id, name FROM snippets
+    JOIN users ON snippets.user_id = users.id
+    WHERE expires > UTC_TIMESTAMP() AND snippets.id = ?`
 
 	row := m.DB.QueryRow(stmt, id)
 	var s Snippet
 
-	err := row.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
+	err := row.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires, &s.Creator.UserID, &s.Creator.UserName)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return Snippet{}, ErrNoRecord
@@ -62,8 +69,9 @@ func (m *SnippetModel) Get(id int) (Snippet, error) {
 }
 
 func (m *SnippetModel) Latest() ([]Snippet, error) {
-	stmt := `SELECT id, title, content, created, expires FROM snippets
-	WHERE expires > UTC_TIMESTAMP() ORDER BY id DESC LIMIT 10`
+	stmt := `SELECT snippets.id, title, content, snippets.created, expires, user_id, name FROM snippets
+    JOIN users ON snippets.user_id = users.id
+	WHERE expires > UTC_TIMESTAMP() ORDER BY snippets.id DESC LIMIT 10`
 
 	rows, err := m.DB.Query(stmt)
 	if err != nil {
@@ -75,7 +83,8 @@ func (m *SnippetModel) Latest() ([]Snippet, error) {
 }
 
 func (m *SnippetModel) GetSnippets(userId int) ([]Snippet, error) {
-	stmt := `SELECT id, title, content, created, expires FROM snippets
+	stmt := `SELECT snippets.id, title, content, snippets.created, expires, user_id, name FROM snippets
+    JOIN users ON snippets.user_id = users.id 
     WHERE user_id = ?`
 
 	rows, err := m.DB.Query(stmt, userId)
@@ -91,7 +100,7 @@ func mapRows(rows *sql.Rows) ([]Snippet, error) {
 	var snippets []Snippet
 	for rows.Next() {
 		var s Snippet
-		err := rows.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
+		err := rows.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires, &s.Creator.UserID, &s.Creator.UserName)
 		if err != nil {
 			return nil, err
 		}

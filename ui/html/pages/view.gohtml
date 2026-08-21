@@ -10,6 +10,11 @@
         </div>
         <pre><code>{{.Content}}</code></pre>
         <div class="metadata">
+            {{if $.IsAuthenticated}}
+                <p>Creator: {{creatorName $.User.ID .Creator}}</p>
+            {{else}}
+                <p>Creator: ?</p>
+            {{end}}
             <time>Created: {{humanDate .Created}}</time>
             <time>Expires: {{humanDate .Expires}}</time>
         </div>

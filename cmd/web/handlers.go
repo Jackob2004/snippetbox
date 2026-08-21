@@ -22,8 +22,10 @@ func (a *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userId := a.sessionManager.GetInt(r.Context(), AuthUserId)
 	data := a.newTemplateData(r)
 	data.Snippets = snippets
+	data.User = models.User{ID: userId}
 	a.render(w, r, http.StatusOK, "home.gohtml", data)
 }
 
@@ -49,8 +51,10 @@ func (a *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userId := a.sessionManager.GetInt(r.Context(), AuthUserId)
 	data := a.newTemplateData(r)
 	data.Snippet = snippet
+	data.User = models.User{ID: userId}
 
 	a.render(w, r, http.StatusOK, "view.gohtml", data)
 }

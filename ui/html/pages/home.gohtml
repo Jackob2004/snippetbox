@@ -8,12 +8,18 @@
             <tr>
                 <th>Title</th>
                 <th>Created</th>
+                <th>Creator</th>
                 <th>ID</th>
             </tr>
             {{range .Snippets}}
                <tr>
                    <td><a href="/snippet/view/{{.ID}}">{{.Title}}</a></td>
                    <td>{{humanDate .Created}}</td>
+                   {{if $.IsAuthenticated}}
+                       <td>{{creatorName $.User.ID .Creator}}</td>
+                   {{else}}
+                       <td>?</td>
+                   {{end}}
                    <td>#{{.ID}}</td>
                </tr>
             {{end}}

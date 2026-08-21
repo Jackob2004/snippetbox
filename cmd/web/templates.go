@@ -40,8 +40,17 @@ func humanDate(t time.Time) string {
 	return t.UTC().Format("02 Jan 2006 at 15:04")
 }
 
+func creatorName(sessionUserId int, creator models.SnippetCreator) string {
+	if sessionUserId == creator.UserID {
+		return "You"
+	}
+
+	return creator.UserName
+}
+
 var functions = template.FuncMap{
-	"humanDate": humanDate,
+	"humanDate":   humanDate,
+	"creatorName": creatorName,
 }
 
 func newTemplateCache() (map[string]*template.Template, error) {
