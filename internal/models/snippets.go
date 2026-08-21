@@ -9,6 +9,7 @@ import (
 type SnippetModelInterface interface {
 	Insert(title string, content string, expires, userId int) (int, error)
 	Get(id int) (Snippet, error)
+	Delete(id int) error
 	Latest() ([]Snippet, error)
 	GetSnippets(userId int) ([]Snippet, error)
 }
@@ -29,6 +30,27 @@ type SnippetCreator struct {
 
 type SnippetModel struct {
 	DB *sql.DB
+}
+
+func (m *SnippetModel) Delete(id int) error {
+	stmt := `DELETE FROM snippets WHERE id = ?`
+
+	res, err := m.DB.Exec(stmt, id)
+
+	if err != nil {
+		return err
+	}
+
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return ErrNoRecord
+	}
+
+	return nil
 }
 
 func (m *SnippetModel) Insert(title, content string, expires, userId int) (int, error) {

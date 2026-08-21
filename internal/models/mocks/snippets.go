@@ -17,6 +17,14 @@ var mockSnippet = models.Snippet{
 
 type SnippetModel struct{}
 
+func (m *SnippetModel) Delete(id int) error {
+	if id != 1 {
+		return models.ErrNoRecord
+	}
+
+	return nil
+}
+
 func (m *SnippetModel) Insert(title string, content string, expires, userId int) (int, error) {
 	return 2, nil
 }

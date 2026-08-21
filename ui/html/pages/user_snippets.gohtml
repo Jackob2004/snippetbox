@@ -9,16 +9,23 @@
                 <th>Title</th>
                 <th>Created</th>
                 <th>ID</th>
+                <th>Actions</th>
             </tr>
         {{range .Snippets}}
             <tr>
                 <td><a href="/snippet/view/{{.ID}}">{{.Title}}</a></td>
                 <td>{{humanDate .Created}}</td>
                 <td>#{{.ID}}</td>
+                <td>
+                    <form action='/snippet/delete/{{.ID}}' method='POST'>
+                        <input type='hidden' name='csrf_token' value='{{$.CSRFToken}}'>
+                        <button class="delete">Delete</button>
+                    </form>
+                </td>
             </tr>
         {{end}}
         </table>
     {{else}}
-        <p>You didn't create any snippets...</p>
+        <p>You don't have any snippets...</p>
     {{end}}
 {{end}}

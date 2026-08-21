@@ -107,6 +107,27 @@ func (a *application) snippetCreatePost(w http.ResponseWriter, r *http.Request) 
 	http.Redirect(w, r, fmt.Sprintf("/snippet/view/%d", id), http.StatusSeeOther)
 }
 
+func (a *application) snippetDelete(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil || id < 1 {
+		http.NotFound(w, r)
+		return
+	}
+
+	err = a.snippets.Delete(id)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			http.NotFound(w, r)
+		}
+		a.serverError(w, r, err)
+		return
+	}
+
+	a.sessionManager.Put(r.Context(), Flash, "Snippet successfully deleted!")
+
+	http.Redirect(w, r, "/account/snippets", http.StatusSeeOther)
+}
+
 func (a *application) accountView(w http.ResponseWriter, r *http.Request) {
 	id := a.sessionManager.GetInt(r.Context(), AuthUserId)
 	user, err := a.users.Get(id)
