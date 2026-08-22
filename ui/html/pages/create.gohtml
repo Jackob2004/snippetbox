@@ -1,37 +1,8 @@
 {{- /*gotype: github.com/Jackob2004/snippetbox/cmd/web.templateData*/ -}}
 {{define "title"}}Create a New Snippet{{end}}
 
+{{define "formAction"}}/snippet/create{{end}}
+
 {{define "main"}}
-    <form action='/snippet/create' method='POST'>
-        <input type='hidden' name='csrf_token' value='{{.CSRFToken}}'>
-        <div>
-            <label for="title">Title:</label>
-            {{with .Form.FieldErrors.title}}
-                <label class="error">{{.}}</label>
-            {{end}}
-            <input type="text" id="title" name="title" value="{{.Form.Title}}" >
-        </div>
-        <div>
-            <label for="content">Content:</label>
-            {{with .Form.FieldErrors.content}}
-                <label class="error">{{.}}</label>
-            {{end}}
-            <textarea id="content" name="content" >{{.Form.Content}}</textarea>
-        </div>
-        <div>
-            <label>Delete in:</label>
-            {{with .Form.FieldErrors.expires}}
-                <label class="error">{{.}}</label>
-            {{end}}
-            <input type="radio" id="expiresYear" name="expires" value="365" {{if (eq .Form.Expires 365)}}checked {{end}}>
-            <label for="expiresYear">One Year</label>
-            <input type="radio" id="expiresWeek" name="expires" value="7" {{if (eq .Form.Expires 7)}}checked {{end}}>
-            <label for="expiresWeek">One Week</label>
-            <input type="radio" id="expiresDay" name="expires" value="1" {{if (eq .Form.Expires 1)}}checked {{end}}>
-            <label for="expiresDay">One Day</label>
-        </div>
-        <div>
-            <input type="submit" value="Submit">
-        </div>
-    </form>
+    {{template "snippetForm" .}}
 {{end}}
