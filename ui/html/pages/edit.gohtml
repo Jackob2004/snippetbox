@@ -1,0 +1,8 @@
+{{- /*gotype: github.com/Jackob2004/snippetbox/cmd/web.templateData*/ -}}
+{{define "title"}}Edit Snippet{{end}}
+
+{{define "formAction"}}/snippet/edit/{{.Snippet.ID}}{{end}}
+
+{{define "main"}}
+    {{template "snippetForm" .}}
+{{end}}

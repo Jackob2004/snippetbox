@@ -215,6 +215,10 @@ button.delete {
     color: red
 }
 
+a.edit{
+    color: gray;
+}
+
 button:hover {
     color: #4EB722;
     text-decoration: underline;

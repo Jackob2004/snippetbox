@@ -66,6 +66,15 @@ type snippetCreateForm struct {
 	validator.Validator `form:"-"`
 }
 
+func (f *snippetCreateForm) validate() bool {
+	f.CheckField(validator.NotBlank(f.Title), "title", "This field cannot be blank")
+	f.CheckField(validator.MaxChars(f.Title, 100), "title", "This field cannot be more than 100 characters long")
+	f.CheckField(validator.NotBlank(f.Content), "content", "This field cannot be blank")
+	f.CheckField(validator.PermittedValue(f.Expires, 1, 7, 365), "expires", "This field must be equal 1, 7 or 365")
+
+	return f.Valid()
+}
+
 func (a *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 	data := a.newTemplateData(r)
 	data.Form = snippetCreateForm{
@@ -83,12 +92,7 @@ func (a *application) snippetCreatePost(w http.ResponseWriter, r *http.Request) 
 		a.clientError(w, http.StatusBadRequest)
 	}
 
-	form.CheckField(validator.NotBlank(form.Title), "title", "This field cannot be blank")
-	form.CheckField(validator.MaxChars(form.Title, 100), "title", "This field cannot be more than 100 characters long")
-	form.CheckField(validator.NotBlank(form.Content), "content", "This field cannot be blank")
-	form.CheckField(validator.PermittedValue(form.Expires, 1, 7, 365), "expires", "This field must be equal 1, 7 or 365")
-
-	if !form.Valid() {
+	if !form.validate() {
 		data := a.newTemplateData(r)
 		data.Form = form
 		a.render(w, r, http.StatusUnprocessableEntity, "create.gohtml", data)
@@ -126,6 +130,74 @@ func (a *application) snippetDelete(w http.ResponseWriter, r *http.Request) {
 	a.sessionManager.Put(r.Context(), Flash, "Snippet successfully deleted!")
 
 	http.Redirect(w, r, "/account/snippets", http.StatusSeeOther)
+}
+
+func (a *application) snippetEdit(w http.ResponseWriter, r *http.Request) {
+	snippetId, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil || snippetId < 1 {
+		http.NotFound(w, r)
+		return
+	}
+
+	snippet, err := a.snippets.Get(snippetId)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			http.NotFound(w, r)
+		}
+		a.serverError(w, r, err)
+		return
+	}
+
+	userId := a.sessionManager.GetInt(r.Context(), AuthUserId)
+	if snippet.Creator.UserID != userId {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+
+	data := a.newTemplateData(r)
+	data.Snippet = models.Snippet{ID: snippetId}
+	data.Form = snippetCreateForm{
+		Title:   snippet.Title,
+		Content: snippet.Content,
+	}
+
+	a.render(w, r, http.StatusOK, "edit.gohtml", data)
+}
+
+func (a *application) snippetEditPost(w http.ResponseWriter, r *http.Request) {
+	snippetId, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil || snippetId < 1 {
+		http.NotFound(w, r)
+		return
+	}
+
+	var form snippetCreateForm
+
+	err = a.decodePostForm(r, &form)
+	if err != nil {
+		a.clientError(w, http.StatusBadRequest)
+	}
+
+	if !form.validate() {
+		data := a.newTemplateData(r)
+		data.Form = form
+		a.render(w, r, http.StatusUnprocessableEntity, "edit.gohtml", data)
+		return
+	}
+
+	userId := a.sessionManager.GetInt(r.Context(), AuthUserId)
+	err = a.snippets.Update(snippetId, userId, form.Title, form.Content, form.Expires)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			http.NotFound(w, r)
+		}
+		a.serverError(w, r, err)
+		return
+	}
+
+	a.sessionManager.Put(r.Context(), Flash, "Snippet successfully edited!")
+	a.logger.Info("TEST")
+
+	http.Redirect(w, r, fmt.Sprintf("/snippet/view/%d", snippetId), http.StatusSeeOther)
 }
 
 func (a *application) accountView(w http.ResponseWriter, r *http.Request) {

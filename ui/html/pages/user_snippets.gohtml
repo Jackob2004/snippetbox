@@ -17,6 +17,7 @@
                 <td>{{humanDate .Created}}</td>
                 <td>#{{.ID}}</td>
                 <td>
+                    <a href="/snippet/edit/{{.ID}}" class="edit">Edit</a>
                     <form action='/snippet/delete/{{.ID}}' method='POST'>
                         <input type='hidden' name='csrf_token' value='{{$.CSRFToken}}'>
                         <button class="delete">Delete</button>

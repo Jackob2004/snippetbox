@@ -13,9 +13,18 @@ var mockSnippet = models.Snippet{
 	Content: "An old silent pond...",
 	Created: time.Now(),
 	Expires: time.Now(),
+	Creator: models.SnippetCreator{UserID: 1, UserName: "Alice"},
 }
 
 type SnippetModel struct{}
+
+func (m *SnippetModel) Update(snippetId, userId int, title string, content string, expires int) error {
+	if snippetId != 1 && snippetId != mockSnippet.Creator.UserID {
+		return models.ErrNoRecord
+	}
+
+	return nil
+}
 
 func (m *SnippetModel) Delete(id int) error {
 	if id != 1 {
