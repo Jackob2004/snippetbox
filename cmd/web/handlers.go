@@ -112,13 +112,14 @@ func (a *application) snippetCreatePost(w http.ResponseWriter, r *http.Request) 
 }
 
 func (a *application) snippetDelete(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.PathValue("id"))
-	if err != nil || id < 1 {
+	snippetId, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil || snippetId < 1 {
 		http.NotFound(w, r)
 		return
 	}
 
-	err = a.snippets.Delete(id)
+	userId := a.sessionManager.GetInt(r.Context(), AuthUserId)
+	err = a.snippets.Delete(snippetId, userId)
 	if err != nil {
 		if errors.Is(err, models.ErrNoRecord) {
 			http.NotFound(w, r)

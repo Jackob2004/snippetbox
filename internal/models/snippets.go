@@ -9,7 +9,7 @@ import (
 type SnippetModelInterface interface {
 	Insert(title string, content string, expires, userId int) (int, error)
 	Get(id int) (Snippet, error)
-	Delete(id int) error
+	Delete(snippetId, userId int) error
 	Update(snippetId, userId int, title string, content string, expires int) error
 	Latest() ([]Snippet, error)
 	GetSnippets(userId int) ([]Snippet, error)
@@ -54,10 +54,10 @@ func (m *SnippetModel) Update(snippetId, userId int, title string, content strin
 	return nil
 }
 
-func (m *SnippetModel) Delete(id int) error {
-	stmt := `DELETE FROM snippets WHERE id = ?`
+func (m *SnippetModel) Delete(snippetId, userId int) error {
+	stmt := `DELETE FROM snippets WHERE id = ? AND user_id = ?`
 
-	res, err := m.DB.Exec(stmt, id)
+	res, err := m.DB.Exec(stmt, snippetId, userId)
 
 	if err != nil {
 		return err

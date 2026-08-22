@@ -19,15 +19,15 @@ var mockSnippet = models.Snippet{
 type SnippetModel struct{}
 
 func (m *SnippetModel) Update(snippetId, userId int, title string, content string, expires int) error {
-	if snippetId != 1 && snippetId != mockSnippet.Creator.UserID {
+	if snippetId != 1 && userId != mockSnippet.Creator.UserID {
 		return models.ErrNoRecord
 	}
 
 	return nil
 }
 
-func (m *SnippetModel) Delete(id int) error {
-	if id != 1 {
+func (m *SnippetModel) Delete(snippetId, userId int) error {
+	if snippetId != 1 && userId != mockSnippet.Creator.UserID {
 		return models.ErrNoRecord
 	}
 
