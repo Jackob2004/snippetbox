@@ -129,7 +129,7 @@ func (m *SnippetModel) Latest() ([]Snippet, error) {
 func (m *SnippetModel) GetSnippets(userId int) ([]Snippet, error) {
 	stmt := `SELECT snippets.id, title, content, snippets.created, expires, user_id, name FROM snippets
     JOIN users ON snippets.user_id = users.id 
-    WHERE user_id = ?`
+    WHERE expires > UTC_TIMESTAMP() AND user_id = ?`
 
 	rows, err := m.DB.Query(stmt, userId)
 	if err != nil {
